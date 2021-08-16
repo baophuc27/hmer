@@ -42,6 +42,27 @@ class Configs(PATH):
 
         self.BEAM_SIZE = 3
 
+        # Decoder num head
+        self.DEC_NUM_HEAD = 3
+
+        # Decoder feedfoward dimension
+        self.DEC_FC_DIM = 512
+
+        # Number of decoder layer
+        self.DEC_NUM_LAYER = 6
+
+
+
+        # -------------------------------------------------
+        # -------- POSITIONAL ENCODING --------------------
+        # -------------------------------------------------
+        # Dimension model ---- TODO: verify its meaning
+        self.D_MODEL = 512
+
+        self.POS_MAX_LEN = 500
+
+        self.TEMPERATURE = 10000.0
+
     def parse_to_dict(self, args):
         args_dict = {}
         for arg in dir(args):
