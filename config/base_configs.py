@@ -28,7 +28,7 @@ class Configs(PATH):
 
         self.ENCODER_LSTM_LAYERS = 1
 
-        self.HIDDEN_DIM = 16
+        self.HIDDEN_DIM = 64
 
         self.BIDIRECTIONAL_LSTM = True
 
@@ -42,6 +42,25 @@ class Configs(PATH):
 
         self.BEAM_SIZE = 3
 
+        self.VAL_EVERY_EPOCH = True
+
+        self.K_FOLD = 5
+        
+        # ------------------------------------------------
+        # ----------------- ENCODER ----------------------
+        # ------------------------------------------------
+        self.EMBED_SIZE = 10
+
+        self.ENC_HIDDEN_DIM = 512
+
+        self.ENCODER_LSTM_LAYERS = 4
+
+        self.BIDIRECTIONAL_LSTM = True
+
+
+        # ------------------------------------------------
+        # ----------------- DECODER ----------------------
+        # ------------------------------------------------
         # Decoder num head
         self.DEC_NUM_HEAD = 3
 
@@ -81,9 +100,7 @@ class Configs(PATH):
 
         os.environ["CUDA_VISIBLE_DEVICES"] = self.GPU_STR
         torch.backends.cudnn.deterministic = True
-        if len(os.listdir(self.DATASET_PATH)) == 0:
-            # Padding datasets
-            preprocess(self.RAW_PATH, self.DATASET_PATH)
+        
 
     def __str__(self):
         for attr in dir(self):

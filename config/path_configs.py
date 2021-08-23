@@ -3,8 +3,7 @@ import os
 
 class PATH:
     def __init__(self):
-        self.RAW_PATH = "./datasets/raw/"
-        self.DATASET_PATH = "./datasets/processed/"
+        self.DATASET_PATH = "./datasets/"
         self.init_path()
 
     def init_path(self):
@@ -24,26 +23,21 @@ class PATH:
         if "processed" not in os.listdir("./datasets"):
             os.mkdir(("./datasets/processed"))
 
-        self.IMAGE_PATH = {
-            "train": self.DATASET_PATH + "",
+        self.DATA_PATH = {
+            "train": self.DATASET_PATH + "TEST2016_INKML_GT",
             "val": self.DATASET_PATH + "",
             "test": self.DATASET_PATH + "",
         }
 
-        self.LABEL_PATH = {"train": self.DATASET_PATH + "", "val": self.DATASET_PATH + ""}
+        self.check_path()
 
-        def check_path(self):
-            print("Checking dataset ...")
+    def check_path(self):
+        print("Checking dataset ...")
 
-            for mode in self.IMAGE_PATH:
-                if not os.path.exists(self.TARGET_PATH[mode]):
-                    print(self.TARGET_PATH[mode] + "NOT EXIST")
-                    exit(-1)
+        for mode in self.DATA_PATH:
+            if not os.path.exists(self.DATA_PATH[mode]):
+                print(self.DATA_PATH[mode] + "NOT EXIST")
+                exit(-1)
 
-            for mode in self.LABEL_PATH:
-                if not os.path.exists(self.QUESTION_PATH[mode]):
-                    print(self.QUESTION_PATH[mode] + "NOT EXIST")
-                    exit(-1)
-
-            print("Finished")
-            print("")
+        print("Finished")
+        print("")
