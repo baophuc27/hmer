@@ -1,5 +1,5 @@
 init:
-	pip install -r requirements.txT
+	pip install -r requirements.txt
 	pip install -e .
 	pre-commit install
 
@@ -16,3 +16,6 @@ clean:
 	rm -rf build/
 	rm -rf dist/
 	rm -rf *.egg-info
+
+train:
+	python run.py --RUN='train'

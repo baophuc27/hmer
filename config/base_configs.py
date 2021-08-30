@@ -45,7 +45,7 @@ class Configs(PATH):
         self.VAL_EVERY_EPOCH = True
 
         self.K_FOLD = 5
-        
+
         # ------------------------------------------------
         # ----------------- ENCODER ----------------------
         # ------------------------------------------------
@@ -57,20 +57,17 @@ class Configs(PATH):
 
         self.BIDIRECTIONAL_LSTM = True
 
-
         # ------------------------------------------------
         # ----------------- DECODER ----------------------
         # ------------------------------------------------
         # Decoder num head
-        self.DEC_NUM_HEAD = 3
+        self.DEC_NUM_HEAD = 4
 
         # Decoder feedfoward dimension
         self.DEC_FC_DIM = 512
 
         # Number of decoder layer
         self.DEC_NUM_LAYER = 6
-
-
 
         # -------------------------------------------------
         # -------- POSITIONAL ENCODING --------------------
@@ -81,6 +78,14 @@ class Configs(PATH):
         self.POS_MAX_LEN = 500
 
         self.TEMPERATURE = 10000.0
+
+        # ------------------------------------------------
+        # -------------- OPTIMIZER -----------------------
+        # ------------------------------------------------
+
+        self.OPT_EPS = 1e-6
+
+        self.WEIGHT_DECAY = 1e-4
 
     def parse_to_dict(self, args):
         args_dict = {}
@@ -100,7 +105,6 @@ class Configs(PATH):
 
         os.environ["CUDA_VISIBLE_DEVICES"] = self.GPU_STR
         torch.backends.cudnn.deterministic = True
-        
 
     def __str__(self):
         for attr in dir(self):
