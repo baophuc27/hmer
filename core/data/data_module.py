@@ -17,7 +17,7 @@ class CROHMEDataModule(LightningDataModule):
         super().__init__()
         self.__C = __C
         self.setup()
-        
+
     def setup(self, stage=None):
         self.dataset = CROHMEDataset(self.__C)
 

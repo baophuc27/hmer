@@ -28,7 +28,7 @@ class Configs(PATH):
 
         self.ENCODER_LSTM_LAYERS = 1
 
-        self.HIDDEN_DIM = 64
+        self.LATENT_DIM = 64
 
         self.BIDIRECTIONAL_LSTM = True
 

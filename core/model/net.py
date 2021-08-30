@@ -6,10 +6,9 @@ import torch.nn.functional as F
 from pytorch_lightning import LightningModule
 from torch import FloatTensor, LongTensor
 
-
+from config.base_configs import Configs
 from core.model.decoder import Decoder
 from core.model.encoder import Encoder
-from config.base_configs import Configs
 
 
 class Net(LightningModule):
@@ -21,6 +20,26 @@ class Net(LightningModule):
         self.decoder = Decoder(__C)
 
     def forward(
-        self, features: FloatTensor, features_mask: FloatTensor, symbol: LongTensor, label: LongTensor
+        self, feature: FloatTensor, feature_mask: LongTensor, symbol: LongTensor, label: LongTensor
     ) -> FloatTensor:
-        pass
+        """ Feed bezier feature and bi-tgt
+        
+        Parameters
+        ----------
+        feature : FloatTensor
+                [b, 10, n]
+        tgt : LongTensor
+
+        Returns
+        ----------
+        FloatTensor
+            [2b , l, vocab_size]
+        """
+
+        feature = self.encoder(feature)
+        feature = torch.cat((feature, feature), dim=0)
+        feature_mask = torch.cat((feature_mask, feature_mask), dim=0)
+
+        out = self.decoder(feature, feature_mask, symbol, label)
+
+        return out

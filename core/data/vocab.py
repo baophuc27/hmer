@@ -1,7 +1,8 @@
 import os
 from functools import lru_cache
-from torch import LongTensor
 from typing import Dict, List
+
+from torch import LongTensor
 
 
 @lru_cache

@@ -10,4 +10,3 @@ class LitNet(LightningModule):
 
         self.save_hyperparameters()
         self.net = Net(__C)
-

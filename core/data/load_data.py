@@ -24,7 +24,6 @@ class CROHMEDataset(Data.Dataset):
         self.data_size = 0
         self.vocab = CROHMEVocab()
 
-
         self.load_data()
 
         print("Total data size: ", self.data_size)
@@ -45,7 +44,7 @@ class CROHMEDataset(Data.Dataset):
                 for trace in data["traces"]:
                     self.feature_list.append(trace["features"])
                     self.symbol_list.append(self.vocab.word2idx[trace["label"]])
-                    self.ix_to_label[self.data_size] = data["annotation"].replace("$","")
+                    self.ix_to_label[self.data_size] = data["annotation"].replace("$", "")
                     self.data_size += 1
 
     def __len__(self):

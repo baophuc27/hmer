@@ -9,6 +9,7 @@ from core.data.data_module import CROHMEDataModule, CROHMEDataset
 from core.data.load_data import CROHMEDataset
 from core.model.lit_net import LitNet
 
+
 class Execution:
     def __init__(self, __C: Configs):
         self.__C = __C
@@ -26,8 +27,8 @@ class Execution:
             # self.datamodule_val = CROHMEDataModule(__C_eval)
 
     def run(self, RUN_MODE):
-        if (RUN_MODE == 'train'):
+        if RUN_MODE == "train":
             model = LitNet(self.__C)
 
             trainer = Trainer()
-            trainer.fit(model,datamodule = self.datamodule)
+            trainer.fit(model, datamodule=self.datamodule)

@@ -4,9 +4,8 @@ import torch.nn.functional as F
 from pytorch_lightning import LightningModule
 from torch import FloatTensor, LongTensor
 
-
-from core.model.pos_enc import WordPositionEncoder
 from config.base_configs import Configs
+from core.model.pos_enc import WordPositionEncoder
 
 
 class Encoder(LightningModule):
@@ -24,8 +23,9 @@ class Encoder(LightningModule):
         )
 
         self.pos_enc = WordPositionEncoder(__C)
+        num_direction = 2 if self.__C.BIDIRECTIONAL_LSTM else 1
 
-        self.reduce = nn.Linear(in_features=__C.ENC_HIDDEN_DIM, out_features=__C.HIDDEN_DIM)
+        self.reduce = nn.Linear(in_features=num_direction * __C.ENC_HIDDEN_DIM, out_features=__C.LATENT_DIM)
 
         self.dropout = nn.Dropout(p=__C.DROPOUT_RATE)
 
@@ -40,7 +40,7 @@ class Encoder(LightningModule):
         Returns
         -------
         FloatTensor
-            [b, l, HIDDEN_DIM]
+            [b, l, LATENT_DIM]
         """
 
         feat = self.lstm(input_feature)
