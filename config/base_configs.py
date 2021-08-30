@@ -6,7 +6,6 @@ import numpy as np
 import torch
 
 from config.path_configs import PATH
-from core.utils.preprocess import preprocess
 
 
 class Configs(PATH):
@@ -24,7 +23,7 @@ class Configs(PATH):
         # --------------- MODEL PARAM ----------------------
         # --------------------------------------------------
 
-        self.BATCH_SIZE = 32
+        self.BATCH_SIZE = 2
 
         self.ENCODER_LSTM_LAYERS = 1
 
@@ -46,6 +45,8 @@ class Configs(PATH):
 
         self.K_FOLD = 5
 
+        self.BEZIER_FEAT_PAD_SIZE = 64
+        
         # ------------------------------------------------
         # ----------------- ENCODER ----------------------
         # ------------------------------------------------
@@ -86,6 +87,8 @@ class Configs(PATH):
         self.OPT_EPS = 1e-6
 
         self.WEIGHT_DECAY = 1e-4
+
+        self.BASE_LR = 1.0
 
     def parse_to_dict(self, args):
         args_dict = {}

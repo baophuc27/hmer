@@ -117,7 +117,7 @@ class Decoder(LightningModule):
             log_p_t = F.log_softmax(decode_outputs, dim=-1)
 
             live_hyp_num = beam_size - len(completed_hypotheses)
-            exp_hyp_scores = repeat(hyp_scores, "b -> b e", e= self.__C.)
+            exp_hyp_scores = repeat(hyp_scores, "b -> b e", e= self.__C.VOCAB_SIZE)
             continuous_hyp_scores = rearrange(exp_hyp_scores + log_p_t, "b e -> (b e)")
             top_cand_hyp_scores, top_cand_hyp_pos = torch.topk(continuous_hyp_scores, k=live_hyp_num)
 
@@ -217,4 +217,3 @@ class Decoder(LightningModule):
 
         r2l_hypos = self._beam_search(src, mask,"r2l",beam_size,max_len)
         self._cross_rate_score(src, mask,r2l_hypos,direction="l2r")
-        

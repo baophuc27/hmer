@@ -23,6 +23,7 @@ class Encoder(LightningModule):
         )
 
         self.pos_enc = WordPositionEncoder(__C)
+
         num_direction = 2 if self.__C.BIDIRECTIONAL_LSTM else 1
 
         self.reduce = nn.Linear(in_features=num_direction * __C.ENC_HIDDEN_DIM, out_features=__C.LATENT_DIM)
@@ -35,7 +36,7 @@ class Encoder(LightningModule):
         Parameters
         ----------
         input_features : FloatTensor
-            [b, t, d]
+            [b, PAD_SIZE, 10] #10 is the dimension of the extracted bezier features
 
         Returns
         -------
@@ -45,10 +46,29 @@ class Encoder(LightningModule):
 
         feat = self.lstm(input_feature)
 
+        feat_mask = self.make_mask(feat)
+
         emb = self.pos_enc(feat)
 
         proj = self.reduce(emb)
 
         out = self.dropout(proj)
 
-        return out
+        return out, feat_mask
+
+    def make_mask(self,feature : FloatTensor) -> LongTensor:
+        """
+        Masking features
+
+        Parameters
+        ----------------
+        input_features : FloatTensor
+
+        Returns
+        ----------------
+        LongTensor
+        """
+        return (torch.sum(
+                torch.abs(feature),
+                dim = -1
+                ) == 0).unsqueeze(1).unsqueeze(2)

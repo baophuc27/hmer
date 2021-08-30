@@ -136,3 +136,4 @@ def to_bi_tgt_out(
     out = torch.cat((l2r_out, r2l_out), dim=0)
 
     return tgt, out
+

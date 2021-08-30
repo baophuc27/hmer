@@ -20,7 +20,7 @@ class Net(LightningModule):
         self.decoder = Decoder(__C)
 
     def forward(
-        self, feature: FloatTensor, feature_mask: LongTensor, symbol: LongTensor, label: LongTensor
+        self, feature: FloatTensor, label: LongTensor
     ) -> FloatTensor:
         """ Feed bezier feature and bi-tgt
         
@@ -36,10 +36,10 @@ class Net(LightningModule):
             [2b , l, vocab_size]
         """
 
-        feature = self.encoder(feature)
+        feature , feature_mask = self.encoder(feature.double())
         feature = torch.cat((feature, feature), dim=0)
         feature_mask = torch.cat((feature_mask, feature_mask), dim=0)
 
-        out = self.decoder(feature, feature_mask, symbol, label)
+        out = self.decoder(feature, feature_mask, label)
 
         return out

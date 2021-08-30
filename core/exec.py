@@ -32,3 +32,4 @@ class Execution:
 
             trainer = Trainer()
             trainer.fit(model, datamodule=self.datamodule)
+            # print(self.datamodule.dataset[1])
