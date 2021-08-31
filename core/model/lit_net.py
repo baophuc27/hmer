@@ -11,17 +11,18 @@ class LitNet(LightningModule):
         super().__init__()
         self.__C = __C
         self.save_hyperparameters()
-        self.net = Net(__C)
+        self.net = Net(__C).float()
 
-    def training_step(self, batch  , ix):
+    def training_step(self, batch  , _):
         feat, label = batch
         out_hat = self(feat,label)
         loss = ce_loss(out_hat, label)
 
+        self.log("train loss",loss,prog_bar=True,on_step=True,on_epoch=True,sync_dist=True)
         return loss
     
     def forward(self, features , label):
-
+        print(label)
         return self.net(features,label)
 
     def configure_optimizers(self):

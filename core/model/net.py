@@ -36,7 +36,7 @@ class Net(LightningModule):
             [2b , l, vocab_size]
         """
 
-        feature , feature_mask = self.encoder(feature.double())
+        feature , feature_mask = self.encoder(feature)
         feature = torch.cat((feature, feature), dim=0)
         feature_mask = torch.cat((feature_mask, feature_mask), dim=0)
 

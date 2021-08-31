@@ -44,7 +44,7 @@ class Encoder(LightningModule):
             [b, l, LATENT_DIM]
         """
 
-        feat = self.lstm(input_feature)
+        feat,_ = self.lstm(input_feature)
 
         feat_mask = self.make_mask(feat)
 

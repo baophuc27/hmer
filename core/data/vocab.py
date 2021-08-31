@@ -1,9 +1,8 @@
 import os
 from functools import lru_cache
 from typing import Dict, List
-
 from torch import LongTensor
-
+from nltk.tokenize import regexp_tokenize
 
 @lru_cache
 def default_dict():

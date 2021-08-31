@@ -22,7 +22,7 @@ class WordPositionEncoder(LightningModule):
 
         position_encode[:, 0::2] = inv_freq.sin()
         position_encode[:, 1::2] = inv_freq.cos()
-        self.register_buffer("pe", position_encode)
+        self.register_buffer("position_encode", position_encode)
 
     def forward(self, feature: torch.Tensor) -> torch.Tensor:
         """add positional encoding to feature
@@ -39,5 +39,5 @@ class WordPositionEncoder(LightningModule):
         """
         _, seq_len, _ = feature.size()
         pos_enc = self.position_encode[:seq_len, :]
-        feature += pos_enc[None, :, :]
+        # feature += pos_enc[None, :, :]
         return feature

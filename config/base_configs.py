@@ -45,14 +45,14 @@ class Configs(PATH):
 
         self.K_FOLD = 5
 
-        self.BEZIER_FEAT_PAD_SIZE = 64
+        self.BEZIER_FEAT_PAD_SIZE = 4
         
         # ------------------------------------------------
         # ----------------- ENCODER ----------------------
         # ------------------------------------------------
         self.EMBED_SIZE = 10
 
-        self.ENC_HIDDEN_DIM = 512
+        self.ENC_HIDDEN_DIM = 128
 
         self.ENCODER_LSTM_LAYERS = 4
 
@@ -65,16 +65,16 @@ class Configs(PATH):
         self.DEC_NUM_HEAD = 4
 
         # Decoder feedfoward dimension
-        self.DEC_FC_DIM = 512
+        self.DEC_FC_DIM = 128
 
         # Number of decoder layer
-        self.DEC_NUM_LAYER = 6
+        self.DEC_NUM_LAYER = 2
 
         # -------------------------------------------------
         # -------- POSITIONAL ENCODING --------------------
         # -------------------------------------------------
         # Dimension model ---- TODO: verify its meaning
-        self.D_MODEL = 512
+        self.D_MODEL = 128
 
         self.POS_MAX_LEN = 500
 
