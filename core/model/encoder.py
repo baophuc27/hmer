@@ -26,7 +26,9 @@ class Encoder(LightningModule):
 
         num_direction = 2 if self.__C.BIDIRECTIONAL_LSTM else 1
 
-        self.reduce = nn.Linear(in_features=num_direction * __C.ENC_HIDDEN_DIM, out_features=__C.LATENT_DIM)
+        self.reduce = nn.Linear(
+            in_features=num_direction * __C.ENC_HIDDEN_DIM, out_features=__C.LATENT_DIM
+        )
 
         self.dropout = nn.Dropout(p=__C.DROPOUT_RATE)
 
@@ -44,7 +46,7 @@ class Encoder(LightningModule):
             [b, l, LATENT_DIM]
         """
 
-        feat,_ = self.lstm(input_feature)
+        feat, _ = self.lstm(input_feature)
 
         feat_mask = self.make_mask(feat)
 
@@ -56,7 +58,7 @@ class Encoder(LightningModule):
 
         return out, feat_mask
 
-    def make_mask(self,feature : FloatTensor) -> LongTensor:
+    def make_mask(self, feature: FloatTensor) -> LongTensor:
         """
         Masking features
 
@@ -68,7 +70,4 @@ class Encoder(LightningModule):
         ----------------
         LongTensor
         """
-        return (torch.sum(
-                torch.abs(feature),
-                dim = -1
-                ) == 0).unsqueeze(1).unsqueeze(2)
+        return (torch.sum(torch.abs(feature), dim=-1) == 0).unsqueeze(1).unsqueeze(2)

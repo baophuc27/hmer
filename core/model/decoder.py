@@ -21,7 +21,9 @@ class Decoder(LightningModule):
 
         self.__C = __C
 
-        self.word_embed = nn.Sequential(nn.Embedding(__C.VOCAB_SIZE, __C.D_MODEL), nn.LayerNorm(__C.D_MODEL))
+        self.word_embed = nn.Sequential(
+            nn.Embedding(__C.VOCAB_SIZE, __C.D_MODEL), nn.LayerNorm(__C.D_MODEL)
+        )
 
         self.pos_enc = WordPositionEncoder(__C)
 
@@ -29,7 +31,9 @@ class Decoder(LightningModule):
 
         self.proj = nn.Linear(__C.D_MODEL, __C.VOCAB_SIZE)
 
-    def forward(self, src: FloatTensor, src_mask: LongTensor, tgt: LongTensor) -> FloatTensor:
+    def forward(
+        self, src: FloatTensor, src_mask: LongTensor, tgt: LongTensor
+    ) -> FloatTensor:
         """generate output for tgt
 
         Parameters
@@ -57,7 +61,11 @@ class Decoder(LightningModule):
         tgt = rearrange(tgt, "b l d -> l b d")
 
         out = self.model(
-            tgt=tgt, memory=src, tgt_mask=tgt_mask, tgt_key_padding_mask=tgt_pad_mask, memory_key_padding_mask=src_mask
+            tgt=tgt,
+            memory=src,
+            tgt_mask=tgt_mask,
+            tgt_key_padding_mask=tgt_pad_mask,
+            memory_key_padding_mask=src_mask,
         )
 
         out = rearrange(out, "l b d -> b l d")
@@ -69,7 +77,10 @@ class Decoder(LightningModule):
     def _build_transformer_decoder(__C: Configs) -> nn.TransformerDecoder:
 
         decoder_layer = nn.TransformerDecoderLayer(
-            d_model=__C.D_MODEL, nhead=__C.DEC_NUM_HEAD, dim_feedforward=__C.DEC_FC_DIM, dropout=__C.DROPOUT_RATE
+            d_model=__C.D_MODEL,
+            nhead=__C.DEC_NUM_HEAD,
+            dim_feedforward=__C.DEC_FC_DIM,
+            dropout=__C.DROPOUT_RATE,
         )
         return TransformerDecoder(decoder_layer, __C.DEC_NUM_LAYER)
 
@@ -82,7 +93,12 @@ class Decoder(LightningModule):
         return mask
 
     def _beam_search(
-        self, src: FloatTensor, mask: LongTensor, direction: str, beam_size: int, max_len: int
+        self,
+        src: FloatTensor,
+        mask: LongTensor,
+        direction: str,
+        beam_size: int,
+        max_len: int,
     ) -> List[Hypothesis]:
 
         assert direction in {"l2r", "r2l"}
@@ -97,7 +113,12 @@ class Decoder(LightningModule):
             start_w = Vocab.EOS_IDX
             stop_w = Vocab.SOS_IDX
 
-        hypotheses = torch.full((1, max_len + 1), fill_value=Vocab.PAD_IDX, dtype=torch.long, device=self.device)
+        hypotheses = torch.full(
+            (1, max_len + 1),
+            fill_value=Vocab.PAD_IDX,
+            dtype=torch.long,
+            device=self.device,
+        )
 
         hypotheses[:, 0] = start_w
 
@@ -117,9 +138,11 @@ class Decoder(LightningModule):
             log_p_t = F.log_softmax(decode_outputs, dim=-1)
 
             live_hyp_num = beam_size - len(completed_hypotheses)
-            exp_hyp_scores = repeat(hyp_scores, "b -> b e", e= self.__C.VOCAB_SIZE)
+            exp_hyp_scores = repeat(hyp_scores, "b -> b e", e=self.__C.VOCAB_SIZE)
             continuous_hyp_scores = rearrange(exp_hyp_scores + log_p_t, "b e -> (b e)")
-            top_cand_hyp_scores, top_cand_hyp_pos = torch.topk(continuous_hyp_scores, k=live_hyp_num)
+            top_cand_hyp_scores, top_cand_hyp_pos = torch.topk(
+                continuous_hyp_scores, k=live_hyp_num
+            )
 
             prev_hyp_ids = top_cand_hyp_pos // self.__C.VOCAB_SIZE
             hyp_word_ids = top_cand_hyp_pos % self.__C.VOCAB_SIZE
@@ -128,14 +151,18 @@ class Decoder(LightningModule):
             new_hypotheses = []
             new_hyp_scores = []
 
-            for prev_hyp_id, hyp_word_id, cand_new_hyp_score in zip(prev_hyp_ids, hyp_word_ids, top_cand_hyp_scores):
+            for prev_hyp_id, hyp_word_id, cand_new_hyp_score in zip(
+                prev_hyp_ids, hyp_word_ids, top_cand_hyp_scores
+            ):
                 cand_new_hyp_score = cand_new_hyp_score.detach().item()
                 hypotheses[prev_hyp_id, t] = hyp_word_id
 
                 if hyp_word_id == stop_w:
                     completed_hypotheses.append(
                         Hypothesis(
-                            seq_tensor=hypotheses[prev_hyp_id, 1:t].detach().clone(),  # remove START_W at first
+                            seq_tensor=hypotheses[prev_hyp_id, 1:t]
+                            .detach()
+                            .clone(),  # remove START_W at first
                             score=cand_new_hyp_score,
                             direction=direction,
                         )
@@ -148,7 +175,9 @@ class Decoder(LightningModule):
                 break
 
             hypotheses = torch.stack(new_hypotheses, dim=0)
-            hyp_scores = torch.tensor(new_hyp_scores, dtype=torch.float, device=self.device)
+            hyp_scores = torch.tensor(
+                new_hyp_scores, dtype=torch.float, device=self.device
+            )
 
         if len(completed_hypotheses) == 0:
             completed_hypotheses.append(
@@ -162,7 +191,11 @@ class Decoder(LightningModule):
         return completed_hypotheses
 
     def _cross_rate_score(
-        self, src: FloatTensor, mask: LongTensor, hypotheses: List[Hypothesis], direction: str,
+        self,
+        src: FloatTensor,
+        mask: LongTensor,
+        hypotheses: List[Hypothesis],
+        direction: str,
     ) -> None:
         """give hypotheses to another model, add score to hypotheses inplace
 
@@ -187,7 +220,9 @@ class Decoder(LightningModule):
 
         flat_hat = rearrange(output_hat, "b l e -> (b l) e")
         flat = rearrange(output, "b l -> (b l)")
-        loss = F.cross_entropy(flat_hat, flat, ignore_index=Vocab.PAD_IDX, reduction="none")
+        loss = F.cross_entropy(
+            flat_hat, flat, ignore_index=Vocab.PAD_IDX, reduction="none"
+        )
 
         loss = rearrange(loss, "(b l) -> b l", b=b)
         loss = torch.sum(loss, dim=-1)
@@ -196,7 +231,9 @@ class Decoder(LightningModule):
             score = -l
             hypotheses[i].score += score
 
-    def beam_search(self, src: FloatTensor, mask: LongTensor, beam_size: int, max_len: int) -> List[Hypothesis]:
+    def beam_search(
+        self, src: FloatTensor, mask: LongTensor, beam_size: int, max_len: int
+    ) -> List[Hypothesis]:
         """run beam search for src features
 
         Parameters
@@ -215,5 +252,5 @@ class Decoder(LightningModule):
         l2r_hypos = self._beam_search(src, mask, "l2r", beam_size, max_len)
         self._cross_rate_score(src, mask, l2r_hypos, direction="r2l")
 
-        r2l_hypos = self._beam_search(src, mask,"r2l",beam_size,max_len)
-        self._cross_rate_score(src, mask,r2l_hypos,direction="l2r")
+        r2l_hypos = self._beam_search(src, mask, "r2l", beam_size, max_len)
+        self._cross_rate_score(src, mask, r2l_hypos, direction="l2r")

@@ -9,6 +9,7 @@ from torchmetrics import Metric
 
 from core.data.vocab import CROHMEVocab as Vocab
 
+
 class ExpRateRecorder(Metric):
     def __init__(self, dist_sync_on_step=False):
         super().__init__(dist_sync_on_step=dist_sync_on_step)
@@ -27,6 +28,7 @@ class ExpRateRecorder(Metric):
     def compute(self) -> float:
         exp_rate = self.rec / self.total_line
         return exp_rate
+
 
 class Hypothesis:
     seq: List[int]
@@ -51,7 +53,9 @@ class Hypothesis:
         return f"seq: {self.seq}, score: {self.score}"
 
 
-def ce_loss(output_hat: torch.Tensor, output: torch.Tensor, ignore_ix: int = Vocab.PAD_IDX) -> FloatTensor:
+def ce_loss(
+    output_hat: torch.Tensor, output: torch.Tensor, ignore_ix: int = Vocab.PAD_IDX
+) -> FloatTensor:
     """
     compute cross-entropy loss
 
@@ -71,7 +75,9 @@ def ce_loss(output_hat: torch.Tensor, output: torch.Tensor, ignore_ix: int = Voc
     return loss
 
 
-def to_tgt_output(tokens: List[List[int]], direction: str, device: torch.device) -> Tuple[LongTensor, LongTensor]:
+def to_tgt_output(
+    tokens: List[List[int]], direction: str, device: torch.device
+) -> Tuple[LongTensor, LongTensor]:
     """Generate tgt and out for indices
 
     Parameters
@@ -101,8 +107,18 @@ def to_tgt_output(tokens: List[List[int]], direction: str, device: torch.device)
 
     batch_size = len(tokens)
     lens = [len(t) for t in tokens]
-    tgt = torch.full((batch_size, max(lens) + 1), fill_value=Vocab.PAD_IDX, dtype=torch.long, device=device,)
-    out = torch.full((batch_size, max(lens) + 1), fill_value=Vocab.PAD_IDX, dtype=torch.long, device=device,)
+    tgt = torch.full(
+        (batch_size, max(lens) + 1),
+        fill_value=Vocab.PAD_IDX,
+        dtype=torch.long,
+        device=device,
+    )
+    out = torch.full(
+        (batch_size, max(lens) + 1),
+        fill_value=Vocab.PAD_IDX,
+        dtype=torch.long,
+        device=device,
+    )
 
     for i, token in enumerate(tokens):
         tgt[i, 0] = start_w
@@ -112,6 +128,7 @@ def to_tgt_output(tokens: List[List[int]], direction: str, device: torch.device)
         out[i, lens[i]] = stop_w
 
     return tgt, out
+
 
 def to_bi_tgt_out(
     tokens: List[List[int]], device: torch.device
@@ -136,4 +153,3 @@ def to_bi_tgt_out(
     out = torch.cat((l2r_out, r2l_out), dim=0)
 
     return tgt, out
-

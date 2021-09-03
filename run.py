@@ -8,9 +8,17 @@ def parse_args():
     """
     Parse input arguments
     """
-    parser = argparse.ArgumentParser(description="Handwritten Mathematical Expression Recognition")
+    parser = argparse.ArgumentParser(
+        description="Handwritten Mathematical Expression Recognition"
+    )
 
-    parser.add_argument("--RUN", dest="RUN_MODE",  choices=["train", "val", "test"], type=str, required=True)
+    parser.add_argument(
+        "--RUN",
+        dest="RUN_MODE",
+        choices=["train", "val", "test"],
+        type=str,
+        required=True,
+    )
 
     args = parser.parse_args()
     return args

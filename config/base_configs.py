@@ -23,7 +23,7 @@ class Configs(PATH):
         # --------------- MODEL PARAM ----------------------
         # --------------------------------------------------
 
-        self.BATCH_SIZE = 2
+        self.BATCH_SIZE = 4
 
         self.ENCODER_LSTM_LAYERS = 1
 
@@ -45,8 +45,8 @@ class Configs(PATH):
 
         self.K_FOLD = 5
 
-        self.BEZIER_FEAT_PAD_SIZE = 4
-        
+        self.BEZIER_FEAT_PAD_SIZE = 16
+
         # ------------------------------------------------
         # ----------------- ENCODER ----------------------
         # ------------------------------------------------
@@ -90,10 +90,16 @@ class Configs(PATH):
 
         self.BASE_LR = 1.0
 
+        self.SCHEDULER_FREQ = 2
+
+        self.PATIENCE = 20
+
     def parse_to_dict(self, args):
         args_dict = {}
         for arg in dir(args):
-            if not arg.startswith("__") and not isinstance(getattr(args, arg), MethodType):
+            if not arg.startswith("__") and not isinstance(
+                getattr(args, arg), MethodType
+            ):
                 if getattr(args, arg) is not None:
                     args_dict[arg] = getattr(args, arg)
 
@@ -111,7 +117,9 @@ class Configs(PATH):
 
     def __str__(self):
         for attr in dir(self):
-            if not attr.startswith("__") and not isinstance(getattr(self, attr), MethodType):
+            if not attr.startswith("__") and not isinstance(
+                getattr(self, attr), MethodType
+            ):
                 print("{ %-17s }->" % attr, getattr(self, attr))
 
         return ""
