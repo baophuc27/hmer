@@ -14,7 +14,8 @@ class ExpRateRecorder(Metric):
     def __init__(self, dist_sync_on_step=False):
         super().__init__(dist_sync_on_step=dist_sync_on_step)
 
-        self.add_state("total_line", default=torch.tensor(0.0), dist_reduce_fx="sum")
+        self.add_state("total_line", default=torch.tensor(
+            0.0), dist_reduce_fx="sum")
         self.add_state("rec", default=torch.tensor(0.0), dist_reduce_fx="sum")
 
     def update(self, indices_hat: List[int], indices: List[int]):
@@ -71,7 +72,7 @@ def ce_loss(
     flat_hat = rearrange(output_hat, "b l e -> (b l) e")
     flat = rearrange(output, "b l -> (b l)")
     loss = F.cross_entropy(flat_hat, flat, ignore_index=ignore_ix)
-
+    print(loss)
     return loss
 
 
@@ -122,7 +123,7 @@ def to_tgt_output(
 
     for i, token in enumerate(tokens):
         tgt[i, 0] = start_w
-        tgt[i, 1 : (1 + lens[i])] = token
+        tgt[i, 1: (1 + lens[i])] = token
 
         out[i, : lens[i]] = token
         out[i, lens[i]] = stop_w

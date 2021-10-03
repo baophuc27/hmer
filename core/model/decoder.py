@@ -122,7 +122,7 @@ class Decoder(LightningModule):
 
         hypotheses[:, 0] = start_w
 
-        hyp_score = torch.zeros(1, dtype=torch.float, device=self.device)
+        hyp_scores = torch.zeros(1, dtype=torch.float, device=self.device)
 
         completed_hypotheses: List[Hypothesis] = []
 
@@ -254,3 +254,5 @@ class Decoder(LightningModule):
 
         r2l_hypos = self._beam_search(src, mask, "r2l", beam_size, max_len)
         self._cross_rate_score(src, mask, r2l_hypos, direction="l2r")
+
+        return l2r_hypos + r2l_hypos

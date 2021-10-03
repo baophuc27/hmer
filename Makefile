@@ -16,6 +16,7 @@ clean:
 	rm -rf build/
 	rm -rf dist/
 	rm -rf *.egg-info
+	rm -rf lightning_logs/
 
 train:
 	python run.py --RUN='train'

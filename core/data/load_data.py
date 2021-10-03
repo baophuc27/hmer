@@ -3,7 +3,7 @@ import operator
 import os
 import pickle
 import time
-
+import math
 import numpy as np
 import torch
 import torch.utils.data as Data
@@ -34,8 +34,7 @@ class CROHMEDataset(Data.Dataset):
     def __getitem__(self, idx):
         feature = torch.from_numpy(self.feature_list[idx])
         label = self.label_list[idx]
-
-        return {"feature": feature.float(), "label": label}
+        return {"feature": feature.half(), "label": label}
 
     def load_data(self):
         max_len = 0
@@ -62,12 +61,11 @@ class CROHMEDataset(Data.Dataset):
                     feat = proc_bezier_feat(
                         data["traces"], self.__C.BEZIER_FEAT_PAD_SIZE
                     )
+
                     self.feature_list.append(feat)
 
                     label = self.vocab.word2indices(formula_dict[ink_name])
-                    # if len(label) > max_len:
-                    #     print(" ".join(formula_dict[ink_name]))
-                    #     max_len = len(label)
+                    
                     if len(label) not in len_dict.keys():
                         len_dict[len(label)] = 1
                     else:

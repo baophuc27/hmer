@@ -4,7 +4,7 @@ from torch import FloatTensor, LongTensor
 
 from config.base_configs import Configs
 from core.model.net import Net
-from core.model.net_utils import ce_loss, to_bi_tgt_out
+from core.model.net_utils import ExpRateRecorder, ce_loss, to_bi_tgt_out
 
 
 class LitNet(LightningModule):
@@ -12,10 +12,12 @@ class LitNet(LightningModule):
         super().__init__()
         self.__C = __C
         self.save_hyperparameters()
-        self.net = Net(__C).float()
+        self.net = Net(__C)
+        self.exprate_recorder = ExpRateRecorder()
 
     def training_step(self, batch, _):
         feat, label = batch
+        
         label, out = to_bi_tgt_out(label, self.device)
         out_hat = self(feat, label)
         loss = ce_loss(out_hat, out)
@@ -29,7 +31,7 @@ class LitNet(LightningModule):
             sync_dist=True,
         )
         return loss
-
+    
     def forward(self, features: FloatTensor, label: LongTensor) -> FloatTensor:
         """ Run with bezier features and target label
 
@@ -41,6 +43,35 @@ class LitNet(LightningModule):
             FloatTensor: [2b,l,vocab_size]
         """
         return self.net(features, label)
+
+    def validation_step(self,batch, _):
+        feat, label = batch
+        
+        label, out = to_bi_tgt_out(label, self.device)
+        out_hat = self(feat, label)
+        loss = ce_loss(out_hat, out)
+
+        self.log(
+            "val loss",
+            loss,
+            prog_bar=True,
+            on_step=True,
+            on_epoch=True,
+            sync_dist=True,
+        )
+
+        hyps = self.net.beam_search(feat)
+
+        best_hyp = max(hyps, key = lambda h: h.score/ (len(h)**self.__C.BEAM_ALPHA))
+
+        self.exprate_recorder(best_hyp.seq, label[0])
+        self.log(
+            "val_ExpRate",
+            self.exprate_recorder,
+            prog_bar=True,
+            on_step=False,
+            on_epoch=True,
+        )
 
     def configure_optimizers(self):
 

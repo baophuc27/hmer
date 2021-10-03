@@ -19,7 +19,7 @@ class Net(LightningModule):
         self.encoder = Encoder(__C)
         self.decoder = Decoder(__C)
 
-    def forward(self, feature: FloatTensor, label: LongTensor) -> FloatTensor:
+    def forward(self, in_feature: FloatTensor, label: LongTensor) -> FloatTensor:
         """ Feed bezier feature and bi-tgt
         
         Parameters
@@ -34,10 +34,14 @@ class Net(LightningModule):
             [2b , l, vocab_size]
         """
 
-        feature, feature_mask = self.encoder(feature)
+        feature, feature_mask = self.encoder(in_feature)
         feature = torch.cat((feature, feature), dim=0)
         feature_mask = torch.cat((feature_mask, feature_mask), dim=0)
 
         out = self.decoder(feature, feature_mask, label)
 
         return out
+
+    def beam_search(self,in_feature):
+        feature , feature_mask = self.encoder(in_feature)
+        return self.decoder.beam_search(feature,feature_mask,self.__C.BEAM_SIZE, self.__C.BEAM_MAX_LEN)

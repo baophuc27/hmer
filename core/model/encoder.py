@@ -38,21 +38,20 @@ class Encoder(LightningModule):
         Parameters
         ----------
         input_features : FloatTensor
-            [b, PAD_SIZE, 10] #10 is the dimension of the extracted bezier features
+            [b, bezier_size, bezier_dim] #bezier_size = 16, bezier_dim =10
 
         Returns
         -------
         FloatTensor
             [b, l, LATENT_DIM]
         """
+        feat_mask = self.make_mask(input_feature)
 
         feat, _ = self.lstm(input_feature)
 
-        feat_mask = self.make_mask(feat)
+        # emb = self.pos_enc(feat)
 
-        emb = self.pos_enc(feat)
-
-        proj = self.reduce(emb)
+        proj = self.reduce(feat)
 
         out = self.dropout(proj)
 
@@ -70,4 +69,4 @@ class Encoder(LightningModule):
         ----------------
         LongTensor
         """
-        return (torch.sum(torch.abs(feature), dim=-1) == 0).unsqueeze(1).unsqueeze(2)
+        return (torch.sum(torch.abs(feature), dim=-1) == 0)

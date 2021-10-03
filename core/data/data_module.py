@@ -62,7 +62,7 @@ class CROHMEDataModule(LightningDataModule):
     def train_dataloader(self):
         return DataLoader(
             dataset=self.train_dataset,
-            shuffle=True,
+            shuffle=False,
             batch_size=self.__C.BATCH_SIZE,
             num_workers=self.__C.NUM_WORKERS,
             pin_memory=self.__C.PIN_MEMORY,
@@ -73,7 +73,6 @@ class CROHMEDataModule(LightningDataModule):
         return DataLoader(
             dataset=self.val_dataset,
             shuffle=False,
-            batch_size=self.__C.BATCH_SIZE,
             num_workers=self.__C.NUM_WORKERS,
             pin_memory=self.__C.PIN_MEMORY,
             collate_fn=collate_fn,

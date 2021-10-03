@@ -23,24 +23,26 @@ class Configs(PATH):
         # --------------- MODEL PARAM ----------------------
         # --------------------------------------------------
 
-        self.BATCH_SIZE = 4
+        self.BATCH_SIZE = 16
 
-        self.ENCODER_LSTM_LAYERS = 1
-
-        self.LATENT_DIM = 64
+        self.LATENT_DIM = 256
 
         self.BIDIRECTIONAL_LSTM = True
 
         self.DROPOUT_RATE = 0.3
 
-        self.NUM_WORKERS = 3
+        self.NUM_WORKERS = 10
 
         self.PIN_MEMORY = True
 
-        self.MAX_EPOCH = 10
+        self.MAX_EPOCH = 300
 
-        self.BEAM_SIZE = 3
+        self.BEAM_SIZE = 10
 
+        self.BEAM_MAX_LEN = 50
+
+        self.BEAM_ALPHA = 1.0
+        
         self.VAL_EVERY_EPOCH = True
 
         self.K_FOLD = 5
@@ -52,9 +54,9 @@ class Configs(PATH):
         # ------------------------------------------------
         self.EMBED_SIZE = 10
 
-        self.ENC_HIDDEN_DIM = 128
+        self.ENC_HIDDEN_DIM = 256
 
-        self.ENCODER_LSTM_LAYERS = 4
+        self.ENCODER_LSTM_LAYERS = 6
 
         self.BIDIRECTIONAL_LSTM = True
 
@@ -65,16 +67,16 @@ class Configs(PATH):
         self.DEC_NUM_HEAD = 4
 
         # Decoder feedfoward dimension
-        self.DEC_FC_DIM = 128
+        self.DEC_FC_DIM = 512
 
         # Number of decoder layer
-        self.DEC_NUM_LAYER = 2
+        self.DEC_NUM_LAYER = 4
 
         # -------------------------------------------------
         # -------- POSITIONAL ENCODING --------------------
         # -------------------------------------------------
         # Dimension model ---- TODO: verify its meaning
-        self.D_MODEL = 128
+        self.D_MODEL = 256
 
         self.POS_MAX_LEN = 500
 
@@ -88,7 +90,7 @@ class Configs(PATH):
 
         self.WEIGHT_DECAY = 1e-4
 
-        self.BASE_LR = 1.0
+        self.BASE_LR = 0.1
 
         self.SCHEDULER_FREQ = 2
 
